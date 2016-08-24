@@ -27,7 +27,7 @@ function generateImage(order, word, size) {
   let Image = Canvas.Image
   let canvas = new Canvas(400, 200)
   let ctx = canvas.getContext('2d');
-  let fontSize = 10 * (size - order)
+  let fontSize = 18
 
   ctx.font = fontSize + 'px Arial';
   ctx.fillText(word, 50, 100);
@@ -47,7 +47,7 @@ export function testCanvas() {
     let ctx = canvas.getContext('2d');
 
     ctx.font = '30px Arial';
-    ctx.fillText("Awesome! สุดยอด", 50, 100);
+    ctx.fillText("Awesome! .สุดยอด", 50, 100);
 
     var te = ctx.measureText('Awesome! สุดยอด');
     ctx.strokeStyle = 'rgba(0,0,0,0.5)';
