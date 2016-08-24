@@ -25,9 +25,9 @@ export function getFiveTopHashtagImage() {
 
 function generateImage(order, word, size) {
   let Image = Canvas.Image
-  let canvas = new Canvas(400, 200)
+  let canvas = new Canvas(200, 200)
   let ctx = canvas.getContext('2d');
-  let fontSize = 18
+  let fontSize = 24
 
   ctx.font = fontSize + 'px Arial';
   ctx.fillText(word, 50, 100);
