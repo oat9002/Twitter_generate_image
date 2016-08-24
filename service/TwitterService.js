@@ -8,7 +8,7 @@ export function getTopFiveHashtagImage() {
   return new Promise((resolve, reject) => {
     axios.get('http://localhost:7774/twitter/getTopFiveHashtag')
       .then(response => {
-        let data = response.data
+        let data = response.data.hashtags
         let arrHashtag = new Array(data.length)
         data.forEach((item, index) => {
           generateImage(index, item, data.length).then(image => {
