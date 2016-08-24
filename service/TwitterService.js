@@ -4,7 +4,7 @@ import Canvas from 'canvas'
 
 let cronJob = cron.CronJob
 
-export function getFiveTopHastagImage() {
+export function getFiveTopHashtagImage() {
   return new Promise((resolve, reject) => {
     axios.get('http://localhost:7774/twitter/getTopFiveHashtag')
       .then(response => {
@@ -43,13 +43,13 @@ function generateImage(order, word, size) {
 
 export function testCanvas() {
     let Image = Canvas.Image
-    let canvas = new Canvas(200, 200)
+    let canvas = new Canvas(400, 200)
     let ctx = canvas.getContext('2d');
 
     ctx.font = '30px Arial';
-    ctx.fillText("Awesome!", 50, 100);
+    ctx.fillText("Awesome! สุดยอด", 50, 100);
 
-    var te = ctx.measureText('Awesome!');
+    var te = ctx.measureText('Awesome! สุดยอด');
     ctx.strokeStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
     ctx.lineTo(50, 102);
