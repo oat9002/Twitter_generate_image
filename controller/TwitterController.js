@@ -14,8 +14,8 @@ twitterRouter.route('/testCanvas').get((req, res) => {
   })
 })
 
-twitterRouter.route('/getFiveTopHashtagImage').get((req, res) => {
-  TwitterService.getFiveTopHashtagImage().then(canvas => {
+twitterRouter.route('/getTopFiveHashtagImage').get((req, res) => {
+  TwitterService.getTopFiveHashtagImage().then(canvas => {
     let arrImage = new Array(canvas.length)
     canvas.forEach((item, index) => {
       arrImage[index] = item
@@ -24,8 +24,8 @@ twitterRouter.route('/getFiveTopHashtagImage').get((req, res) => {
   })
 })
 
-twitterRouter.route('/testFiveTopHashtagImage').get((req, res) => {
-  TwitterService.getFiveTopHashtagImage().then(canvas => {
+twitterRouter.route('/testTopFiveHashtagImage').get((req, res) => {
+  TwitterService.getTopFiveHashtagImage().then(canvas => {
     let str = ''
     canvas.forEach(item => {
       str = str + '<img src="' + item + '" />' + '<br/><br/>'

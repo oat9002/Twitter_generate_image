@@ -4,7 +4,7 @@ import Canvas from 'canvas'
 
 let cronJob = cron.CronJob
 
-export function getFiveTopHashtagImage() {
+export function getTopFiveHashtagImage() {
   return new Promise((resolve, reject) => {
     axios.get('http://localhost:7774/twitter/getTopFiveHashtag')
       .then(response => {
