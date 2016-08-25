@@ -59,27 +59,3 @@ export function testCanvas() {
       resolve(canvas.toDataURL())
   })
 }
-
-//save tweets every 30 minutes
-// let saveTweetJob = new cronJob('* */30 * * * *', () => {
-//   getAllQuery().then(docs => {
-//     docs.forEach(item => {
-//       T.get('search/tweets', { q: item.query}, (err, data) => {
-//         if(err) {
-//           console.log(err.stack)
-//         }
-//         else {
-//           saveTweet(data)
-//         }
-//       })
-//     })
-//   })
-//   .catch((err) => {
-//     console.log(err)
-//   })
-// },
-// () => {
-//   console.log('saveTweetJob has stopped')
-// },
-// true
-// )

@@ -1,6 +1,7 @@
 "use strict";
 import express from 'express'
 import * as TwitterService from '../service/TwitterService'
+import {db} from '../db'
 
 let twitterRouter = express.Router()
 
