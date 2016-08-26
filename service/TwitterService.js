@@ -14,26 +14,24 @@ var mockData = {
   "created_time": "2016-08-24T12:46:03+0000"
 }
 
-// export function getTopFiveHashtagImage() {
-//   return new Promise((resolve, reject) => {
-//     axios.get('http://localhost:7774/twitter/getTopFiveHashtag')
-//       .then(response => {
-//         let data = response.data.hashtags
-//         let arrHashtag = new Array(data.length)
-//         data.forEach((item, index) => {
-//           generateImage(index, item, data.length).then(image => {
-//             arrHashtag[index] = image
-//           })
-//         })
-//         resolve(arrHashtag)
-//       })
-//       .catch(error => {
-//         reject(error)
-//       })
-//   })
-// }
-
-
+export function getTopFiveHashtagImage() {
+  return new Promise((resolve, reject) => {
+    axios.get('http://localhost:7774/twitter/getTopFiveHashtag')
+      .then(response => {
+        let data = response.data.hashtags
+        let arrHashtag = new Array(data.length)
+        data.forEach((item, index) => {
+          generateImage(index, item, data.length).then(image => {
+            arrHashtag[index] = image
+          })
+        })
+        resolve(arrHashtag)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
 
 function generateImage(order, word, size) {
   let Image = Canvas.Image
@@ -50,12 +48,12 @@ function generateImage(order, word, size) {
   ctx.stroke();
   return new Promise(resolve => {
     resolve(canvas.toDataURL())
-})
+  })
 }
 
-export function feedTwitter(){
-  let data = mockData
-  let date = new Date(data.created_time)
+function generateTweetImage(tweet){
+  //let data = mockData
+  let date = tweet.created_at.toString()
   let Image = Canvas.Image
   let canvas = new Canvas(500, 100)
   let ctx = canvas.getContext('2d')
@@ -67,72 +65,90 @@ export function feedTwitter(){
   ctx.fillRect(15,20,45,45)
   ctx.font = 'bold 12px Arial'
   ctx.fillStyle="#365899"
-  ctx.fillText(data.name, 75, 30)
+  ctx.fillText(tweet.user.name, 75, 30)
+
   ctx.font = ' 12px Arial'
   ctx.fillStyle="#90949c"
-  ctx.fillText(data.name2, 150, 30)
+  ctx.fillText(tweet.user.screen_name, 150, 30)
   ctx.font = '12px Arial'
   ctx.fillStyle="#1d2129"
-  wrapText(ctx, data.comment,75, 46, 400, 15);
+  wrapText(ctx,tweet.text,75, 46, 400, 15);
   ctx.font = '12px Arial'
   ctx.fillStyle="#90949c"
-  ctx.fillText(data.created_time,75,88)
-
-
-  // request.get(data.picture, function (error, response, body) {
-  //     if (!error && response.statusCode == 200) {
-  //         data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
-  //
-  //         var image = new Image()
-  //         image.onload = function() {
-  //             ctx.drawImage(image, 15, 30)
-  //         }
-  //         image.src = data
-  //         // console.log(data);
-  //         resolve(canvas.toDataURL())
-  //
-  //     }
-  // })
+  ctx.fillText(date,75,88)
 
   return new Promise(resolve => {
     resolve(canvas.toDataURL())
-})
-
+  })
 }
 
+export function getTweetImage(){
+  return new Promise((resolve, reject) => {
+    axios.get('http://localhost:7774/twitter/getFiveLatestTweet')
+      .then(response => {
+        console.log(response);
+        let data = response.data.tweets
+        let arrTweet = new Array(data.length)
+        data.forEach((item, index) => {
+          generateTweetImage(item).then(image => {
+            arrTweet[index] = image
+          })
+        })
+        resolve(arrTweet)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
+
+
+
 export function testCanvas() {
-    let Image = Canvas.Image
-    let canvas = new Canvas(400, 200)
-    let ctx = canvas.getContext('2d');
+  let Image = Canvas.Image
+  let canvas = new Canvas(400, 200)
+  let ctx = canvas.getContext('2d');
 
-    ctx.font = '30px Arial';
-    ctx.fillText("Awesome! สุดยอด", 50, 100);
+  ctx.font = '30px Arial';
+  ctx.fillText("Awesome! สุดยอด", 50, 100);
 
-    var te = ctx.measureText('Awesome! สุดยอด');
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.lineTo(50, 102);
-    ctx.lineTo(50 + te.width, 102);
-    ctx.stroke();
-    return new Promise(resolve => {
-      resolve(canvas.toDataURL())
+  var te = ctx.measureText('Awesome! สุดยอด');
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.lineTo(50, 102);
+  ctx.lineTo(50 + te.width, 102);
+  ctx.stroke();
+  return new Promise(resolve => {
+    resolve(canvas.toDataURL())
   })
 }
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
-  var words = split('th_TH',text)
-  var space = text.split(" ")
+  var name
+  var message
+
+  var words = split('th_TH',message)
+  var space = message.split(" ")
   var line = '';
   var spaceIndex =0
   var spaceCount= 0
   var textCount =0
   var out =0
-
+  var testLine
   for(var n = 0; n < words.length; n++) {
-      var testLine = line + words[n]
+
+      if(n==0){
+        testLine = name+' '+ words[n]
+      }
+      else{
+        testLine = line + words[n]
+      }
+
       textCount = testLine.length
           var metrics = context.measureText(testLine);
       var testWidth = metrics.width;
+
+      console.log(space[spaceIndex]+testLine)
       if( (spaceCount+space[spaceIndex].length-out ==textCount )&& (testWidth < maxWidth)){
           spaceCount=textCount+1
           textCount = 0
@@ -145,7 +161,7 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
         context.fillText(line, x, y)
         line = words[n]
 
-        if(line.length == space[spaceIndex-1].length){
+        if(spaceIndex>0&&line.length == space[spaceIndex-1].length){
           line= line+" "
           spaceCount=line.length
 
@@ -173,7 +189,6 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
   }
   context.fillText(line, x, y);
 }
-
 
 
   //  ctx.fillStyle="#f6f7f9"
