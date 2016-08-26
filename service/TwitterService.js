@@ -77,6 +77,21 @@ function generateTweetImage(tweet){
   ctx.fillStyle="#90949c"
   ctx.fillText(date,75,88)
 
+  axios.get(tweet.user.profile_image_url)
+    .then(response => {
+          data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+
+          var image = new Image()
+          image.onload = function() {
+              ctx.drawImage(image, 15, 30)
+          }
+          image.src = data
+          // console.log(response);
+          resolve(canvas.toDataURL())
+
+      }
+  })
+
   return new Promise(resolve => {
     resolve(canvas.toDataURL())
   })
@@ -126,6 +141,7 @@ export function testCanvas() {
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
   var name
   var message
+
 
   var words = split('th_TH',message)
   var space = message.split(" ")
