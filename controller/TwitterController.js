@@ -15,6 +15,14 @@ twitterRouter.route('/testCanvas').get((req, res) => {
   })
 })
 
+twitterRouter.route('/feedTwitter').get((req, res) => {
+  TwitterService.feedTwitter().then(canvas => {
+    res.send('<img src="' + canvas + '" />')
+  })
+})
+
+
+
 twitterRouter.route('/getTopFiveHashtagImage').get((req, res) => {
   TwitterService.getTopFiveHashtagImage().then(canvas => {
     let arrImage = new Array(canvas.length)
