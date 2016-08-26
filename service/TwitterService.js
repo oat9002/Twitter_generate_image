@@ -2,17 +2,18 @@ import cron from 'cron'
 import axios from 'axios'
 import Canvas from 'canvas'
 import split from 'icu-wordsplit'
+import fs from 'fs'
 var request = require('request').defaults({ encoding: null });
 
 let cronJob = cron.CronJob
 
-var mockData = {
-  "picture": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xap1/v/t1.0-1/p50x50/13307361_1699730896916160_4024021109681787383_n.jpg?oh=6813ae68341be6dc1611c97aa58e104b&oe=583D78A6&__gda__=1482093415_b95fc9c2e5accafd56daf207ab72fd4f",
-  "name": "CE KMITL",
-  "name2": "@ce_kmitl_52",
-  "comment": "Computer Engineering สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง #ทีมลาดกระบัง #KMITL #ลูกพระจอม",
-  "created_time": "2016-08-24T12:46:03+0000"
-}
+// var mockData = {
+//   "picture": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xap1/v/t1.0-1/p50x50/13307361_1699730896916160_4024021109681787383_n.jpg?oh=6813ae68341be6dc1611c97aa58e104b&oe=583D78A6&__gda__=1482093415_b95fc9c2e5accafd56daf207ab72fd4f",
+//   "name": "CE KMITL",
+//   "name2": "@ce_kmitl_52",
+//   "comment": "Computer Engineering สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง #ทีมลาดกระบัง #KMITL #ลูกพระจอม",
+//   "created_time": "2016-08-24T12:46:03+0000"
+// }
 
 export function getTopFiveHashtagImage() {
   return new Promise((resolve, reject) => {
@@ -53,46 +54,56 @@ function generateImage(order, word, size) {
 
 function generateTweetImage(tweet){
   //let data = mockData
-  let date = tweet.created_at.toString()
+  let date = new Date (tweet.created_at).toString()
   let Image = Canvas.Image
   let canvas = new Canvas(500, 100)
   let ctx = canvas.getContext('2d')
 
-  ctx.fillStyle="#f6f7f9"
+  //ctx.fillStyle="#1d2129"
+  //ctx.fillStyle="#f6f7f9"
   //ctx.fillStyle="#FFFF99"
+  //ctx.fillStyle="#3b5998"
+  //ctx.fillStyle="#9fdbff"
+  //ctx.fillStyle="#90949c"
+
+
+  ctx.fillStyle="#9fdbff"
   ctx.fillRect(0,0,500,100)
-  ctx.fillStyle="#FFFF99"
+  ctx.fillStyle="#f6f7f9"
   ctx.fillRect(15,20,45,45)
   ctx.font = 'bold 12px Arial'
-  ctx.fillStyle="#365899"
+  ctx.fillStyle="#1d2129"
   ctx.fillText(tweet.user.name, 75, 30)
-
   ctx.font = ' 12px Arial'
   ctx.fillStyle="#90949c"
-  ctx.fillText(tweet.user.screen_name, 150, 30)
+  ctx.fillText('@'+tweet.user.screen_name, 175, 30)
   ctx.font = '12px Arial'
   ctx.fillStyle="#1d2129"
   wrapText(ctx,tweet.text,75, 46, 400, 15);
   ctx.font = '12px Arial'
   ctx.fillStyle="#90949c"
   ctx.fillText(date,75,88)
-
-  axios.get(tweet.user.profile_image_url)
-    .then(response => {
-          data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
-
-          var image = new Image()
-          image.onload = function() {
-              ctx.drawImage(image, 15, 30)
-          }
-          image.src = data
-          // console.log(response);
-          resolve(canvas.toDataURL())
-
-      }
-  })
-
   return new Promise(resolve => {
+    // request.get(tweet.user.profile_image_url, function (error, response, body) {
+    //     if (!error && response.statusCode == 200) {
+    //         let data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+    //         var image = new Image()
+    //         image.onload = function() {
+    //             ctx.drawImage(image, 15, 20)
+    //         }
+    //         image.src = data
+    //     }
+    // })
+
+
+    // fs.readFile('/usr/local/nodejs/Twitter_generate_image/service/twitterbird_RGB.png',function(err, squid) {
+    //   if (err) throw err;
+    //   let img = new Image;
+    //   img.src = squid;
+    //   //let canvas = new Canvas(400, 200)
+    //   let ctx = canvas.getContext('2d');
+    //   ctx.drawImage(img, 15, 20, img.width / 4, img.height / 4);
+    // })
     resolve(canvas.toDataURL())
   })
 }
@@ -101,7 +112,6 @@ export function getTweetImage(){
   return new Promise((resolve, reject) => {
     axios.get('http://localhost:7774/twitter/getFiveLatestTweet')
       .then(response => {
-        console.log(response);
         let data = response.data.tweets
         let arrTweet = new Array(data.length)
         data.forEach((item, index) => {
@@ -116,8 +126,6 @@ export function getTweetImage(){
       })
   })
 }
-
-
 
 export function testCanvas() {
   let Image = Canvas.Image
@@ -139,32 +147,19 @@ export function testCanvas() {
 }
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
-  var name
-  var message
-
-
-  var words = split('th_TH',message)
-  var space = message.split(" ")
+  var words = split('th_TH',text)
+  var space = text.split(" ")
   var line = '';
   var spaceIndex =0
   var spaceCount= 0
   var textCount =0
   var out =0
-  var testLine
+
   for(var n = 0; n < words.length; n++) {
-
-      if(n==0){
-        testLine = name+' '+ words[n]
-      }
-      else{
-        testLine = line + words[n]
-      }
-
+      var testLine = line + words[n]
       textCount = testLine.length
           var metrics = context.measureText(testLine);
       var testWidth = metrics.width;
-
-      console.log(space[spaceIndex]+testLine)
       if( (spaceCount+space[spaceIndex].length-out ==textCount )&& (testWidth < maxWidth)){
           spaceCount=textCount+1
           textCount = 0
@@ -177,7 +172,7 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
         context.fillText(line, x, y)
         line = words[n]
 
-        if(spaceIndex>0&&line.length == space[spaceIndex-1].length){
+        if(line.length == space[spaceIndex-1].length){
           line= line+" "
           spaceCount=line.length
 
@@ -187,7 +182,6 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
           spaceCount=0
 
         }
-
 
         if( spaceCount+space[spaceIndex].length-out == line.length){
             spaceCount=line.length+1
@@ -207,7 +201,47 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 }
 
 
-  //  ctx.fillStyle="#f6f7f9"
-  //  ctx.fillRect(0,0,400,200)
-  //  ctx.fillStyle="#3b5998"
-  //  ctx.fillRect(15,30,20,20)
+export function testImageData() {
+  return new Promise(resolve => {
+    let Image = Canvas.Image
+    fs.readFile('/usr/local/nodejs/Twitter_generate_image/service/twitterbird_RGB.png',function(err, squid) {
+      if (err) throw err;
+      let img = new Image;
+      img.src = squid;
+      let canvas = new Canvas(400, 200)
+      let ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, img.width / 4, img.height / 4);
+      resolve(canvas.toDataURL())
+    })
+  })
+}
+  // return new Promise((resolve, reject) => {
+  //   axios.get('http://localhost:7774/twitter/getFiveLatestTweet')
+  //     .then(response => {
+  //       let data = response.data.tweets
+  //       console.log('url: ', data[0].user.profile_image_url);
+  //       request.get(data[0].user.profile_image_url, function (error, response, body) {
+  //           if (!error && response.statusCode == 200) {
+  //             console.log('request');
+  //               let d = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+  //               // resolve('<img src=' + d + '/>')
+  //               resolve('<img src="' + item + '" />' + '<br/><br/>')
+  //           }
+  //           else {
+  //             reject(error)
+  //           }
+  //       })
+
+        // axios.get(data[0].user.profile_image_url)
+        //   .then(res => {
+        //     console.log('imgdatares');
+        //     let img = "data:" + res.headers.content-type + ";base64," + new Buffer(res.data).toString('base64');
+        //     // console.log(img);
+        //     resolve(img)
+        //   })
+//       })
+//       .catch(error => {
+//         reject(error)
+//       })
+//   })
+//}
